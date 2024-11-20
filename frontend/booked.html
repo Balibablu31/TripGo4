@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Booked Hotels</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f7;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        header {
+            background-color: #005f73;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        nav ul li {
+            display: inline;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            background-color: #005f73;
+            border-radius: 5px;
+            font-size: 1.1rem;
+        }
+
+        nav ul li a:hover {
+            background-color: #005f73;
+        }
+
+        main {
+            padding: 30px 15px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .hotel-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+
+        .hotel-item {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .hotel-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .hotel-item h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #004080;
+        }
+
+        .hotel-item p {
+            font-size: 1rem;
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .hotel-item button {
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .hotel-item button:hover {
+            background-color: #c9302c;
+        }
+
+        footer {
+            background-color: #005f73;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            margin-top: 30px;
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .hotel-list {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav ul {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            nav ul li a {
+                padding: 8px 12px;
+            }
+
+            .hotel-item {
+                padding: 15px;
+            }
+
+            footer p {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>TripGo</h1>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="registration.html">Registration</a></li>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="enquiry.html">Enquiry</a></li>
+            <li><a href="booking_payment.html">Booking</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <h2>Your Booked Hotels</h2>
+    <div class="hotel-list" id="booked-hotels">
+        <!-- Booked hotels will be dynamically added here -->
+    </div>
+</main>
+
+<script>
+    // Fetch the list of booked hotels from the backend
+    async function fetchBookedHotels() {
+        try {
+            const response = await fetch('http://localhost:3000/api/booked-hotels');
+            const bookings = await response.json();
+
+            const hotelList = document.getElementById('booked-hotels');
+            hotelList.innerHTML = ''; // Clear the list
+
+            if (bookings.length === 0) {
+                hotelList.innerHTML = '<p>No hotels booked yet.</p>';
+            } else {
+                bookings.forEach(booking => {
+                    const hotelItem = document.createElement('div');
+                    hotelItem.className = 'hotel-item';
+                    hotelItem.innerHTML = `
+                        <h3>${booking.hotel_name}</h3>
+                        <p><strong>Payment Method:</strong> ${booking.payment_method}</p>
+                        <p><strong>Booking Date:</strong> ${new Date(booking.booking_date).toLocaleDateString()}</p>
+                        <button onclick="cancelBooking(${booking.booking_id}, this)">Cancel Booking</button>
+                    `;
+                    hotelList.appendChild(hotelItem);
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching booked hotels:', error);
+        }
+    }
+
+    // Handle booking cancellation
+    async function cancelBooking(bookingId, buttonElement) {
+        try {
+            const response = await fetch(`http://localhost:3000/api/cancel/${bookingId}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                alert('Cancellation successful!');
+                // Remove the cancelled booking card from the page
+                buttonElement.closest('.hotel-item').remove();
+            } else {
+                const result = await response.json();
+                alert('Cancellation failed: ' + result.error);
+            }
+        } catch (error) {
+            console.error('Error during cancellation:', error);
+            alert('Cancellation failed, please try again.');
+        }
+    }
+
+    // Load the booked hotels on page load
+    window.onload = fetchBookedHotels;
+</script>
+
+</body>
+</html>

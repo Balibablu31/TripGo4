@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Booking System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            background-color: #005f73;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2rem;
+        }
+
+        header nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+            padding: 0;
+        }
+
+        header nav ul li {
+            margin: 0 15px;
+        }
+
+        header nav ul li a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: color 0.3s;
+        }
+
+        header nav ul li a:hover {
+            color: #94d2bd;
+        }
+
+        #hotelList {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+        }
+
+        .hotel-card {
+            background: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            flex: 1 1 calc(50% - 20px); /* Three hotels per row */
+            max-width: calc(50% - 20px);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .hotel-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .hotel-card h3 {
+            margin: 10px 0;
+            color: #333;
+        }
+
+        .hotel-card p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .hotel-card button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .hotel-card button:hover {
+            background: #0056b3;
+        }
+
+        #paymentSection {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .review-section {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .hotel-card {
+                flex: 1 1 calc(100% - 20px); /* Two hotels per row for smaller screens */
+                max-width: calc(100% - 20px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hotel-card {
+                flex: 1 1 100%; /* One hotel per row for small screens */
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>TripGo</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="registration.html">Registration</a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="enquiry.html">Enquiry</a></li>
+                <li><a href="booked.html">My Bookings</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="container">
+        <h1>TripGo</h1>
+
+        <!-- Hotel List -->
+        <div id="hotelList"></div>
+
+        <!-- Payment Section -->
+        <div id="paymentSection">
+            <h2>Payment Form</h2>
+            <form id="paymentForm">
+                <p id="selectedHotel"></p>
+                <label for="paymentMethod">Select Payment Method:</label>
+                <select id="paymentMethod" name="paymentMethod">
+                    <option value="Credit Card">Credit Card</option>
+                    <option value="PayPal">PayPal</option>
+                    <option value="UPI">UPI</option>
+                </select>
+                <br>
+                <button type="button" onclick="submitBooking()">Complete Booking</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let selectedHotelId = null;
+
+        // Fetch hotels and reviews from the API and display them
+        async function loadHotels() {
+            try {
+                const response = await fetch('http://localhost:3000/hotels');
+                const hotels = await response.json();
+
+                const hotelList = document.getElementById('hotelList');
+                hotelList.innerHTML = ''; // Clear any existing hotel list
+
+                hotels.forEach(hotel => {
+                    const hotelCard = document.createElement('div');
+                    hotelCard.className = 'hotel-card';
+                    hotelCard.innerHTML = `
+                        <img src="${hotel.photo_url}" alt="${hotel.hotel_name}" />
+                        <h3>${hotel.hotel_name}</h3>
+                        <p>Price: ₹${(hotel.price)} per night</p>
+                        <button onclick="bookHotel(${hotel.hotel_id}, '${hotel.hotel_name}')">Book</button>
+                        <button onclick="toggleReviews(${hotel.hotel_id})">Reviews</button>
+                        
+                        <!-- Review Section -->
+                        <div id="reviews-${hotel.hotel_id}" class="review-section">
+                            <h4>Reviews:</h4>
+                            ${hotel.reviews.length > 0 
+                                ? hotel.reviews.map(review => `
+                                    <div class="review">
+                                        <p><strong>${review.reviewer_name}</strong> (${review.rating}/5):</p>
+                                        <p>${review.review}</p>
+                                    </div>
+                                `).join('') 
+                                : '<p>No reviews available for this hotel.</p>'
+                            }
+                        </div>
+                    `;
+                    hotelList.appendChild(hotelCard);
+                });
+            } catch (error) {
+                console.error('Error fetching hotels:', error);
+            }
+        }
+
+        // Scroll to payment section and prefill hotel details
+        function bookHotel(hotelId, hotelName) {
+            selectedHotelId = hotelId; // Store selected hotel ID
+            const paymentSection = document.getElementById('paymentSection');
+            document.getElementById('selectedHotel').textContent = `Booking for: ${hotelName}`;
+            paymentSection.style.display = 'block';
+            paymentSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Toggle reviews section visibility
+        function toggleReviews(hotelId) {
+            const reviewSection = document.getElementById(`reviews-${hotelId}`);
+            reviewSection.style.display = reviewSection.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Submit booking form
+        async function submitBooking() {
+            const paymentMethod = document.getElementById('paymentMethod').value;
+
+            if (!selectedHotelId) {
+                alert('Please select a hotel first.');
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3000/api/book-hotel', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        hotelId: selectedHotelId,
+                        paymentMethod: paymentMethod,
+                    }),
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert('Booking successful!');
+                    location.reload(); // Reload page to reset form
+                } else {
+                    alert('Booking failed: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error booking hotel:', error);
+            }
+        }
+
+        // Fetch hotel data on page load
+        window.onload = loadHotels;
+    </script>
+</body>
+</html>

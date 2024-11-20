@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Hotel Reservation System</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        /* Header Section */
+        header {
+            background: linear-gradient(to right, #005f73, #0a9396);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            padding: 10px 0;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        nav ul li a:hover {
+            background: #94d2bd;
+            color: #005f73;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: url('https://i.imghippo.com/files/xZIu6633xs.jpg') no-repeat center center/cover;
+            height: 450px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .hero h2,
+        .hero p {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h2 {
+            font-size: 3rem;
+            text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.7);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-top: 10px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Main Section */
+        main {
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        main h2 {
+            color: #005f73;
+            margin-bottom: 30px;
+            font-size: 2.2rem;
+        }
+
+        .hotel-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .hotel-item {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .hotel-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .hotel-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .hotel-item h3 {
+            font-size: 1.6rem;
+            color: #005f73;
+            padding: 15px 10px 5px;
+        }
+
+        .hotel-item p {
+            padding: 0 15px 15px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .hotel-item button {
+            background: #005f73;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            font-size: 1rem;
+            margin: 15px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .hotel-item button:hover {
+            background: #0a9396;
+            transform: scale(1.05);
+        }
+
+        /* Footer Section */
+        footer {
+            background: linear-gradient(to right, #005f73, #0a9396);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            margin-top: 40px;
+        }
+
+        footer p {
+            font-size: 1rem;
+        }
+
+        footer a {
+            color: #94d2bd;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>TripGo</h1>
+        <nav>
+            <ul>
+                <li><a href="registration.html">Registration</a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="enquiry.html">Enquiry</a></li>
+                <li><a href="booking_payment.html">Booking</a></li>
+                <li><a href="booked.html">My Bookings</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="hero">
+        <div>
+            <h2>Discover Your Perfect Stay</h2>
+            <p>Choose from a wide variety of hotels that fit your preferences and budget.</p>
+        </div>
+    </div>
+
+    <main>
+        <h2>Most Favourite Destinations</h2>
+        <div class="hotel-list">
+            <div class="hotel-item">
+                <img src="https://i.imghippo.com/files/WSF9855ZI.jpg" alt="Hotel Sunshine">
+                <h3>Night Life</h3>
+                <p>Make your night lively as we provide you luxurious rooms and amenities.</p>
+            </div>
+            <div class="hotel-item">
+                <img src="https://i.imghippo.com/files/xBx9189VdI.jpg" alt="Mountain Retreat">
+                <h3>Mountain Retreat</h3>
+                <p>A peaceful escape in the mountains, perfect for nature lovers and adventurers.</p>
+            </div>
+            <div class="hotel-item">
+                <img src="https://i.imghippo.com/files/PyGt2427Ydw.jpg" alt="Beachside Resort">
+                <h3>Beachside Resorts</h3>
+                <p>Enjoy stunning ocean views and beach access at this family-friendly resort.</p>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>
